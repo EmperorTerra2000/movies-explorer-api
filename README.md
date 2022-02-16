@@ -1,2 +1,6 @@
 # movies-explorer-api
-Бэкенд часть дипломной работы Яндекс Практикума
+
+Бэкенд дипломной работы Яндекс Практикума
+
+_Домен сайта_
+[api.movies.students.nomoredomains.xyz](https://api.movies.students.nomoredomains.xyz/)
