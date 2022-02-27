@@ -22,22 +22,6 @@ module.exports.createMovie = (req, res, next) => {
   } = req.body;
   const creatorId = req.user._id; // id создателя карточки
 
-  if (
-    !country
-    || !director
-    || !duration
-    || !year
-    || !description
-    || !image
-    || !trailerLink
-    || !nameRU
-    || !nameEN
-    || !thumbnail
-    || !movieId
-  ) {
-    return next(new InvalidDataError('Невалидные данные'));
-  }
-
   return Movie.create({
     country,
     director,
@@ -57,9 +41,9 @@ module.exports.createMovie = (req, res, next) => {
       // данная ошибка приходит со схемы монгуста
       if (err.name === 'ValidationError') {
         next(new InvalidDataError('Невалидные данные'));
+      } else {
+        next(err);
       }
-
-      next(err);
     });
 };
 
@@ -68,7 +52,7 @@ module.exports.getMoviesMe = (req, res, next) => {
   const creatorId = req.user._id; // id создателя карточки
 
   return Movie.find({ owner: creatorId })
-    .then((movies) => res.status(200).send({ data: movies }))
+    .then((movies) => res.send({ data: movies }))
     .catch(next);
 };
 
@@ -81,15 +65,17 @@ module.exports.deleteMovieMe = (req, res, next) => {
     .then((movie) => {
       if (!movie) {
         next(new NotFoundError('Карточка с таким id отсутствует'));
+        res.end();
       }
 
       // если автор карточки - другой человек, то ошибка
       if (String(movie.owner) !== creatorId) {
         next(new ForbiddenError('У вас нет доступа к этой карточке'));
+        res.end();
       }
 
       return Movie.findByIdAndRemove(movieId);
     })
-    .then((movie) => res.status(200).send({ data: movie }))
+    .then((movie) => res.send({ data: movie }))
     .catch(next);
 };

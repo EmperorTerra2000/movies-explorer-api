@@ -7,17 +7,19 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 // модуль отвечающий за process.env.NODE_ENV
 
-const { errors, Joi, celebrate } = require('celebrate');
+const { errors } = require('celebrate');
 
 // импортируем логгеры
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 // импортируем роутеры
-const routerUser = require('./routes/users');
-const routerMovie = require('./routes/movies');
-
-// контроллеры аутентификации, авторизации
-const { createUser, login, deleteCookie } = require('./controllers/users');
+const {
+  routerUser,
+  routerMovie,
+  routerSignUp,
+  routerSignIn,
+  routerSignOut,
+} = require('./routes/index');
 
 // импорт миддлвэр
 const auth = require('./middlewares/auth');
@@ -28,7 +30,7 @@ const cors = require('./middlewares/cors');
 const NotFoundError = require('./errors/not-found-error');
 
 // подключаем environment переменные
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { NODE_ENV, JWT_SECRET, DB_ROUTE } = process.env;
 
 const { PORT = 3000 } = process.env;
 
@@ -41,7 +43,7 @@ app.use(bodyParser.urlencoded({ extended: true }));// для приема стр
 app.use(cookieParser(NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'));
 
 // подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(DB_ROUTE, {
   useNewUrlParser: true,
 });
 
@@ -50,43 +52,26 @@ app.use(requestLogger);// подключаем логгер запросов
 
 app.use(cors);// обработка кросс-доменных запросов
 
-app.use('/users', auth, routerUser);
-app.post(
-  '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required(),
-    }),
-  }),
-  login,
-);
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(8).required(),
-    }),
-  }),
-  createUser,
-);
+app.use(routerSignIn);
+app.use(routerSignUp);
+
+// мидлвэр авторизации используем для всего приложения
+app.use(auth);
+
 // удаление cookie файла
-app.post(
-  '/signout',
-  deleteCookie,
-);
+app.use(routerSignOut);
 
-app.use('/movie', auth, routerMovie);
+app.use(routerMovie);
 
-// errorLogger нужно подключить после обработчиков роутов и до обработчиков ошибок
-app.use(errorLogger);// подключаем логгер ошибок
+app.use(routerUser);
 
 // обработка запроса на несуществующий роут
 app.use((req, res, next) => {
   next(new NotFoundError('404 Страница по указанному маршруту не найдена.'));
 });
+
+// errorLogger нужно подключить после обработчиков роутов и до обработчиков ошибок
+app.use(errorLogger);// подключаем логгер ошибок
 
 // обработчки ошибок celebrate
 app.use(errors());
