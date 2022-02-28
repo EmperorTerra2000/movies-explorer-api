@@ -43,7 +43,7 @@ app.use(bodyParser.urlencoded({ extended: true }));// для приема стр
 app.use(cookieParser(NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret'));
 
 // подключаемся к серверу mongo
-mongoose.connect(DB_ROUTE, {
+mongoose.connect(NODE_ENV === 'production' ? DB_ROUTE : 'mongodb://localhost:27017/moviesdb', {
   useNewUrlParser: true,
 });
 
