@@ -5,6 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 // модуль отвечающий за process.env.NODE_ENV
 
 const { errors } = require('celebrate');
@@ -23,6 +24,7 @@ const {
 
 // импорт миддлвэр
 const auth = require('./middlewares/auth');
+const { limiter } = require('./middlewares/rate-limit');
 // миддлэр CORS
 const cors = require('./middlewares/cors');
 
@@ -36,6 +38,8 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+app.use(helmet());// автоматическое проставление заголовков безопасности (Content-Security-Policy..)
+app.use(limiter);
 app.use(bodyParser.json());// для собирания JSON-формата
 app.use(bodyParser.urlencoded({ extended: true }));// для приема страниц внутри POST-запроса
 // промежуточный обработка сookie-parser

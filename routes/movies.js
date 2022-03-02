@@ -32,7 +32,7 @@ router.post(
       nameRU: Joi.string().required(),
       nameEN: Joi.string().required(),
       thumbnail: Joi.string().required().custom(validatorUrl),
-      movieId: Joi.string().hex().length(24).required(),
+      movieId: Joi.number().required(),
     }),
   }),
   createMovie,

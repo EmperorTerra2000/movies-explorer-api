@@ -4,7 +4,7 @@ const {
   deleteCookie,
 } = require('../controllers/signout');// импортируем контроллеры
 
-router.post(
+router.get(
   '/signout',
   deleteCookie,
 );
