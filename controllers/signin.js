@@ -39,6 +39,8 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600 * 168, // время жизни файла cookie в секундах ( 7 дней )
       });
 
+      res.cookie("SameSite", "None");
+
       res.end();
     })
     .catch(next);
