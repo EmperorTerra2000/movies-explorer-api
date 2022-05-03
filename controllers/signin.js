@@ -38,7 +38,7 @@ module.exports.login = (req, res, next) => {
       res.header("Access-Control-Allow-Credentials", true);
 
       res.cookie("token", token, {
-        maxAge: 18000, // время жизни файла cookie в секундах ( 7 дней )
+        maxAge: 18000000, // время жизни файла cookie в секундах ( 7 дней )
         sameSite: "none",
         secure: true,
       });
