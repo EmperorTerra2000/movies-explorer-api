@@ -23,7 +23,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       // создаем токен
       // первый аргумент это пейлоуд, т.е. что будет использоваться для создания хеша
-      const token = jwt.sign(
+      let token = jwt.sign(
         // пейлоуд
         { _id: user._id },
         // секретный ключ
@@ -37,9 +37,9 @@ module.exports.login = (req, res, next) => {
 
       res.cookie("token", token, {
         maxAge: 3600 * 168, // время жизни файла cookie в секундах ( 7 дней )
+        sameSite: "none",
+        secure: true,
       });
-
-      res.cookie("SameSite", "None");
 
       res.end();
     })
