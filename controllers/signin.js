@@ -23,7 +23,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       // создаем токен
       // первый аргумент это пейлоуд, т.е. что будет использоваться для создания хеша
-      let token = jwt.sign(
+      const token = jwt.sign(
         // пейлоуд
         { _id: user._id },
         // секретный ключ
