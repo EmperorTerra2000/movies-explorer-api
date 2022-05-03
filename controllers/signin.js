@@ -1,23 +1,20 @@
 // const bcrypt = require('bcryptjs');// хеширование данных
-const jwt = require('jsonwebtoken');// модуль создает токен
+const jwt = require("jsonwebtoken"); // модуль создает токен
 
-const User = require('../models/user');// импорт модели User
+const User = require("../models/user"); // импорт модели User
 
 // кастомные классы ошибок
-const InvalidDataError = require('../errors/invalid-data-error');
+const InvalidDataError = require("../errors/invalid-data-error");
 
 // подключаем environment переменные
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 // контроллер аутентификации пользователя
 module.exports.login = (req, res, next) => {
-  const {
-    email,
-    password,
-  } = req.body;
+  const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new InvalidDataError('Заполните поля корректно'));
+    return next(new InvalidDataError("Заполните поля корректно"));
   }
 
   // поиск в бд документа по емайлу, а потом сверяем пароль (хеш)
@@ -30,15 +27,15 @@ module.exports.login = (req, res, next) => {
         // пейлоуд
         { _id: user._id },
         // секретный ключ
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+        NODE_ENV === "production" ? JWT_SECRET : "dev-secret",
         // объект опций
         {
           // срок действия токена
-          expiresIn: '7d',
-        },
+          expiresIn: "7d",
+        }
       );
 
-      res.cookie('token', token, {
+      res.cookie("token", token, {
         maxAge: 3600 * 168, // время жизни файла cookie в секундах ( 7 дней )
       });
 
