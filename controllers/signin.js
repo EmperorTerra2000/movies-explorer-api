@@ -35,15 +35,8 @@ module.exports.login = (req, res, next) => {
         }
       );
 
-      res.header("Access-Control-Allow-Credentials", true);
-
-      res.cookie("token", token, {
-        expires: new Date(Date.now() + 7 * 24 * 3600000), // время жизни файла cookie в секундах ( 7 дней )
-        sameSite: "none",
-        secure: true,
-      });
-
-      res.end();
+      // вернем токен
+      res.send({ token });
     })
     .catch(next);
 };
